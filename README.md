@@ -34,16 +34,16 @@ Implemented a C++ Extended Kalman Filter program to fusion Lidar and Rador senso
 Root Mean Square Error (RMSE) Accuracy were calculated for each set of data:
 
 sample-laser-radar-measurement-data-1.txt
-* px	       0.0651649
-* py	       0.0605378
-* vx	       0.54319
-* vy	       0.544191
+* px	       0.0620209
+* py	       0.057777
+* vx	       0.521125
+* vy	       0.53581
 
 sample-laser-radar-measurement-data-2.txt
-* px	       0.208971
-* py	       0.214995
-* vx	       0.510136
-* vy	       0.808932
+* px	       0.185638
+* py	       0.190432
+* vx	       0.481652
+* vy	       0.830509
 
 ## Future Work
 
