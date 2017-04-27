@@ -73,8 +73,8 @@ FusionEKF::FusionEKF() {
   //ekf_.R_ << 0.0225, 0,
 	//		 0, 0.0225;
 			 
-	noise_ax = 9;
-	noise_ay = 9;
+	noise_ax = 10;
+	noise_ay = 10;
 
 }
 
@@ -109,20 +109,27 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       
       float x = measurement_pack.raw_measurements_[0]*cos(measurement_pack.raw_measurements_[1]);
       float y = measurement_pack.raw_measurements_[0]*sin(measurement_pack.raw_measurements_[1]);
-      if(x == 0 || y == 0)
-		return;
-      ekf_.x_ << x,y,0,0;
+      //if(x == 0 || y == 0)
+		//return;
+	  float vx = measurement_pack.raw_measurements_[2]*cos(measurement_pack.raw_measurements_[1]);
+	  float vy = measurement_pack.raw_measurements_[2]*sin(measurement_pack.raw_measurements_[1]);
+      ekf_.x_ << x,y,vx,vy;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       /**
       Initialize state.
       */
-      if (measurement_pack.raw_measurements_[0] == 0 or measurement_pack.raw_measurements_[1] == 0)
-          return;   
+      //if (measurement_pack.raw_measurements_[0] == 0 or measurement_pack.raw_measurements_[1] == 0)
+      //    return;   
       
       ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
 
     }
+    
+    if(ekf_.x_(0) < 0.0001)
+		ekf_.x_(0) = 0.0001;
+	if(ekf_.x_(1) < 0.0001)
+		ekf_.x_(1) = 0.0001;
     
 
     // done initializing, no need to predict or update
@@ -160,8 +167,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 			   dt_3/2*noise_ax, 0, dt_2*noise_ax, 0,
 			   0, dt_3/2*noise_ay, 0, dt_2*noise_ay;
 
-
-  ekf_.Predict();
+	if(dt > 0.001)//As suggested by reviewer, if dt is too small and two measurement is too close, no need to predict
+	{
+		ekf_.Predict();
+	}
 
   /*****************************************************************************
    *  Update

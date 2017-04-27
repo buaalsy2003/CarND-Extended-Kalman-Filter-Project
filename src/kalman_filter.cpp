@@ -23,9 +23,9 @@ KalmanFilter::KalmanFilter() {
 
    //measurement matrix for radar
    H_j = MatrixXd(3, 4);
-   H_j << 0, 0, 0, 0,
-	   1e-9, 1e-9, 0, 0,
-	   0, 0, 0, 0;	
+   H_j << 1, 1, 0, 0,
+	   1, 1, 0, 0,
+	   1, 1, 1, 1;	
 }
 
 KalmanFilter::~KalmanFilter() {}
@@ -78,9 +78,11 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   Tools t;
   MatrixXd H_j = t.CalculateJacobian(x_);
   
+  MatrixXd Ht = H_j.transpose();
+  MatrixXd PHt = P_ * Ht;
   MatrixXd y = z - t.h(x_);
-  MatrixXd S = H_j * P_ * H_j.transpose() + R_radar;
-  MatrixXd K = P_ * H_j.transpose() * S.inverse();
+  MatrixXd S = H_j * PHt + R_radar;
+  MatrixXd K = PHt * S.inverse();
   
   x_ = x_ + (K * y);
   long x_size = x_.size();
